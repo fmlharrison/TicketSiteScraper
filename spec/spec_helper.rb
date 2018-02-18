@@ -15,6 +15,8 @@
 # ------------------------------------
 # My Requires
 # ------------------------------------
+require 'simplecov'
+SimpleCov.start
 require 'support/vcr_setup.rb'
 require 'webmock/rspec'
 WebMock.disable_net_connect!(allow_localhost: true)
