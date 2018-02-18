@@ -6,14 +6,30 @@ require 'pry'
 class Scraper
   BASE_URL = 'http://www.wegottickets.com/searchresults/all'.freeze
 
-  attr_reader :events_list_page
+  attr_reader :events_list_page, :pages_count, :events
+
+  def initialize(pages_count = 1)
+    @pages_count = pages_count
+    @events = []
+  end
 
   def scrape_events
     web_page_details
-    events = all_events(events_list_page).map do |event|
+    count = 0
+    while count < pages_count
+      events_on_page(events_list_page)
+      count += 1
+      break if count == pages_count
+      next_page(events_list_page)
+    end
+    events.flatten
+  end
+
+  def events_on_page(page)
+    events_on_page = all_events(page).map do |event|
       event_info(event)
     end
-    events
+    events << events_on_page
   end
 
   def all_events(tickets_page)
@@ -50,5 +66,9 @@ class Scraper
     search_form = page.form_with(id: 'search-form')
     search_form.field_with(class: 'search-form').value = 'music'
     @events_list_page = search_form.submit
+  end
+
+  def next_page(page)
+    @events_list_page = page.link_with(class: 'pagination_link_text nextlink').click
   end
 end
