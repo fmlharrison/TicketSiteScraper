@@ -24,7 +24,7 @@ RSpec.describe Scraper do
       expect(event_info['city']).to eq('LONDON')
       expect(event_info['venue']).to eq("The Albany's Comedy Cellar")
       expect(event_info['date'].to_s).to eq DateTime.parse('Sun 18th Feb, 2018, 12:00pm').to_s
-      expect(event_info['price']).to include('price' => '£582.00')
+      expect(event_info['pricing']).to include('price' => '£582.00')
     end
   end
 
@@ -45,9 +45,11 @@ RSpec.describe Scraper do
   describe '#scrape_events' do
     it 'should make a array of all the event details on the page' do
       VCR.use_cassette('wegottickets/allevents') do
-        events = subject.scrape_events
-        expect(events).to be_an_instance_of(Array)
-        expect(events.length).to eq(10)
+        VCR.use_cassette('wegottickets/music') do
+          events = subject.scrape_events
+          expect(events).to be_an_instance_of(Array)
+          expect(events.length).to eq(10)
+        end
       end
     end
   end

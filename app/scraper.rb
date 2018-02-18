@@ -1,6 +1,7 @@
 require 'nokogiri'
 require 'mechanize'
 require 'httparty'
+require 'pry'
 
 class Scraper
   BASE_URL = 'http://www.wegottickets.com/searchresults/all'.freeze
@@ -26,7 +27,7 @@ class Scraper
     event_info['city'] = venue.first.strip
     event_info['venue'] = venue.last.strip
     event_info['date'] = DateTime.parse(event.search('div.venue-details h4')[1].text.to_s)
-    event_info['price'] = event_pricing(event.search('div.block.diptych.text-right'))
+    event_info['pricing'] = event_pricing(event.search('div.block.diptych.text-right'))
 
     event_info
   end
@@ -45,6 +46,9 @@ class Scraper
 
   def web_page_details
     agent = Mechanize.new
-    @events_list_page = agent.get(BASE_URL)
+    page = agent.get(BASE_URL)
+    search_form = page.form_with(id: 'search-form')
+    search_form.field_with(class: 'search-form').value = 'music'
+    @events_list_page = search_form.submit
   end
 end
