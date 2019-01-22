@@ -1,7 +1,6 @@
 require 'nokogiri'
 require 'mechanize'
 require 'httparty'
-require 'pry'
 
 class Scraper
   BASE_URL = 'http://www.wegottickets.com/searchresults/all'.freeze
